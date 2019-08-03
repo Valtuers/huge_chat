@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+#
+#fdfs:
+#  soTimeout: 1501
+#  connectTimeout: 601
+#  thumbImage.width: 80
+#  thumbImage.height: 80
+#  trackerList[0]: 192.168.1.70:22122
+#
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/huge_chat?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: root
+    password: root
+    type: com.zaxxer.hikari.HikariDataSource
+  hikari:
+    connection-timeout: 30000
+    minimum-idle: 5
+    maximum-pool-size: 15
+    auto-commit: true
+    idle-timeout: 600000
+    pool-name: DatebookHikariCP
+    max-lifetime: 28740000
+    connection-test-query: SELECT 1
+
+mybatis:
+  type-aliases-package: com.huge_chat.bean
+  mapper-locations: com/huge_chat/dao/mapping/*.xml
+
+mapper:
+  mappers: com.huge_chat.utils.MyMapper
+  not-empty: false
+  identity: MYSQL
+#
+#pagehelper:
+#  helperDialect: mysql
+#  supportMethodsArguments: true
+#  params: count=countSql
