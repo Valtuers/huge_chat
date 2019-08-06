@@ -59,6 +59,10 @@
 			bottom: "50px"
 		}
 		mui.plusReady(function(){
+			//禁止返回到login.html
+			mui.back = function(){
+				return false;
+			}
 			//获取当前的webview对象
 			var indexWebview = plus.webview.currentWebview();
 			//向当前的主页追加子页的4张webview对象

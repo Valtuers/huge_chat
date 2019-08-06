@@ -8,4 +8,7 @@ public interface UserService {
 
     //查询用户是否存在
     public Users queryUserForLogin(String username,String pwd);
+
+    //用户注册
+    public Users saveUser(Users users) throws Exception;
 }

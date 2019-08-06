@@ -1,10 +1,12 @@
 package com.huge_chat.controller;
 
 import com.huge_chat.bean.Users;
-import com.huge_chat.dao.UsersMapper;
+import com.huge_chat.bean.vo.UsersVo;
 import com.huge_chat.service.UserService;
 import com.huge_chat.utils.HugeJSONResult;
+import com.huge_chat.utils.MD5Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,18 +16,14 @@ public class UserController {
 
     @Autowired
     UserService userService;
-    @Autowired
-    UsersMapper usersMapper;
 
-    @RequestMapping("/test")
-    public Users test(){
-        return usersMapper.selectOne(new Users(){{
-            setId("1");
-        }});
+    @RequestMapping("/t")
+    public String test(){
+        return "哈哈哈";
     }
 
     @PostMapping("/registOrLogin")
-    public HugeJSONResult registOrLogin(@RequestBody Users users){
+    public HugeJSONResult registOrLogin(@RequestBody Users users) throws Exception {
         //1.用户名和密码不能为空
         if(StringUtils.isBlank(users.getUsername()) || StringUtils.isBlank(users.getPassword())){
             return HugeJSONResult.errorMsg("用户名或密码不能为空...");
@@ -35,15 +33,17 @@ public class UserController {
         Users userResult = null;
         if(userNameIsExist){
             //2.1登录
-            userResult = userService.queryUserForLogin(users.getUsername(),users.getPassword());
+            userResult = userService.queryUserForLogin(users.getUsername(),MD5Utils.getMD5Str(users.getPassword()));
             if(userResult == null){
                 return HugeJSONResult.errorMsg("用户名或密码不正确...");
             }
         }else{
             //2.2注册
+            userResult = userService.saveUser(users);
         }
-
-        return HugeJSONResult.ok();
+        UsersVo usersVo = new UsersVo();
+        BeanUtils.copyProperties(userResult,usersVo);
+        return HugeJSONResult.ok(usersVo);
     }
 
 }
