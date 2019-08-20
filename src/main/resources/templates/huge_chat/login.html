@@ -122,18 +122,17 @@
 							timeout: 10000,
 							headers:{'Content-Type':'application/json'},
 							success: function(res){
-								console.log(JSON.stringify(res));
 								username.blur();
 								txt_password.blur();
 								if(res.status == 200){
 									//登陆或者注册成功之后,保存全局用户对象到本地缓存
-									var userInfoJson = data.data;
+									var userInfoJson = res.data;
 									app.setUserGlobalInfo(userInfoJson);
 									
 									//页面跳转
 									mui.openWindow("index.html","index");
 								}else{
-									app.showToast(data.msg,"error");
+									app.showToast(res.msg,"error");
 								}
 							}
 						});
