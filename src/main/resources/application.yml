@@ -2,14 +2,17 @@ server:
   port: 8011
   tomcat:
     uri-encoding: UTF-8
-#
-#fdfs:
-#  soTimeout: 1501
-#  connectTimeout: 601
-#  thumbImage.width: 80
-#  thumbImage.height: 80
-#  trackerList[0]: 192.168.1.70:22122
-#
+
+fdfs:
+  so-timeout: 1501
+  connect-timeout: 601
+  thumb-image:             #缩略图生成参数
+    width: 80
+    height: 80
+  tracker-list:            #TrackerList参数,支持多个
+    - 172.16.2.130:22122
+#    - 192.168.145.129:22122
+
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
@@ -17,15 +20,15 @@ spring:
     username: root
     password: root
     type: com.zaxxer.hikari.HikariDataSource
-  hikari:
-    connection-timeout: 30000
-    minimum-idle: 5
-    maximum-pool-size: 15
-    auto-commit: true
-    idle-timeout: 600000
-    pool-name: DatebookHikariCP
-    max-lifetime: 28740000
-    connection-test-query: SELECT 1
+    hikari:
+      connection-timeout: 30000
+      minimum-idle: 5
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 600000
+      pool-name: DatebookHikariCP
+      max-lifetime: 28740000
+      connection-test-query: SELECT 1
 
 mybatis:
   type-aliases-package: com.huge_chat.bean

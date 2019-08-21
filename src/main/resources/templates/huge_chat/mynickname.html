@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/header.css"/>
+	</head>
+	<style>
+		body{
+			background: #5e5e5e;
+		}
+		#img_my_face{
+			width: 100%;
+			margin-top: 50%;
+			box-shadow: 0 0 20px #000;
+		}
+	</style>
+	<body>
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<a id="saveNickName" class="mui-icon mui-icon-rigth-nav mui-pull-right title-color" style="font-size: 14px;line-height: 25px;">保存</a>
+			<h1 class="mui-title title-color">设置昵称</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-input-row">
+				<input id="new_nickname" type="text" class="mui-input-speech mui-input-clear" placeholder="修改昵称">
+			</div>
+			
+		</div>
+		
+		<script src="js/mui.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function(){setNickName
+				var user = app.getUserGlobalInfo();
+				var new_nickname = document.getElementById("new_nickname");
+				new_nickname.focus();
+				new_nickname.value = user.nickname;
+				
+				document.getElementById("saveNickName").addEventListener("tap",function(){
+					if(new_nickname.value == ''){
+						app.showToast("昵称不能为空","error");
+						return false;
+					}
+					if(new_nickname.value.length > 15){
+						app.showToast("昵称不能超过15位","error");
+						return false;
+					}
+					plus.nativeUI.showWaiting("请稍后...");
+					mui.ajax(app.serverUrl+"/user/setNickName",{
+						data:{
+							userid: user.id,
+							nickname: new_nickname.value
+						},
+						dataType:'json',
+						type: 'post',
+						timeout: 10000,
+						headers:{'Content-Type':'application/json'},
+						success: function(res){
+							plus.nativeUI.closeWaiting();
+							if(res.status == 200){
+								//修改昵称成功之后,保存全局用户对象到本地缓存
+								var userInfoJson = res.data;
+								app.setUserGlobalInfo(userInfoJson);
+								
+								mui.fire(plus.webview.getWebviewById("me"),'refresh')
+								//页面返回
+								mui.back();
+							}else{
+								app.showToast(res.msg,"error");
+							}
+						}
+					});
+					mui.openWindow("mynickname.html","mynickname");
+				});
+				
+			});
+		</script>
+	</body>
+
+</html>

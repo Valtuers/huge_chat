@@ -2,11 +2,11 @@ window.app = {
 	/**
 	 * 后端地址
 	 */
-	serverUrl: "http://192.168.43.102:8011",
+	serverUrl: "http://172.16.2.200:8011",
 	/**
 	 * 图片服务器的url地址
 	 */
-	imgServerUrl: "",
+	imgServerUrl: "http://172.16.2.130:88/huge/",
 	/**
 	 * 判断字符串是否为空
 	 * true: 不为空

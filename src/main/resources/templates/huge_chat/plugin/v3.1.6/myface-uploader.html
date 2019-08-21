@@ -89,40 +89,33 @@
 						
 						// 上传头像
 						var user = app.getUserGlobalInfo();
-						// 与后端联调
-						mui.ajax(app.serverUrl + "/user/uploadFaceBase64",{
+						//与后端联调
+						mui.ajax(app.serverUrl+"/user/uploadFaceBase64",{
 							data:{
-								userId:user.id,
-								faceData:base64Url
+								userId: user.id,
+								faceData: base64Url
 							},
-							dataType:'json',//服务器返回json格式数据
-							type:'post',//HTTP请求类型
-							timeout:20000,//超时时间设置为20秒；
-							headers:{'Content-Type':'application/json'},	              
-							success:function(data){
-								
-								// 关闭等待框
+							dataType:'json',
+							type: 'post',
+							timeout: 10000,
+							headers:{'Content-Type':'application/json'},
+							success: function(res){
+								//关闭等待框
 								plus.nativeUI.closeWaiting();
-								
-								if (data.status == 200) {
+								if(res.status == 200){
 									var userInfo = data.data;
 									app.setUserGlobalInfo(userInfo);
-									
-									// 触发另外一个webview的自定义事件，可以使用 mui.fire()
-									var imooc_meWebview = plus.webview.getWebviewById("me");
-									mui.fire(imooc_meWebview, "refresh");
-									
-									// 触发另外一个webview的自定义事件，可以使用 mui.fire()
-									var myfaceWebview = plus.webview.getWebviewById("myface");
-									mui.fire(myfaceWebview, "refresh");
-									
-									// 页面跳转
-									mui.openWindow("index.html", "index");
-								} else {
-									app.showToast(data.msg, "error");
+									//触发另外一个webview的自定义事件,可以使用mui.fire()
+									mui.fire(plus.webview.getWebviewById("me"),'refresh');
+									mui.fire(plus.webview.getWebviewById("myface"),'refresh');
+									//页面跳转
+									mui.openWindow("index.html","index");
+								}else{
+									app.showToast(res.msg,"error");
 								}
 							}
 						});
+						
 					}
 				});
 			});

@@ -11,4 +11,7 @@ public interface UserService {
 
     //用户注册
     public Users saveUser(Users users) throws Exception;
+
+    //修改用户信息
+    public Users updateUserInfo(Users users);
 }

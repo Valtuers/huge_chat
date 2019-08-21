@@ -51,17 +51,14 @@
 		<script type="text/javascript">
 			mui.init();
 			mui.plusReady(function(){
-				var user = app.getUserGlobalInfo();
-				var faceImage = document.getElementById("img_my_face");
-				if(user != null){
-					var faceImage = user.faceImage;
-					if(app.isNotNull(faceImage)){
-						faceImage.src = app.imgServerUrl+faceImage;
-					}
-				}
-				var imgWidth = document.body.clientWidth;
-				faceImage.width = imgWidth;
-				faceImage.height = imgWidth;
+				
+				refreshFace();
+				
+				//添加自定义事件,刷新头像
+				window.addEventListener("refresh",function(){
+					refreshFace();
+				});
+				
 				
 				//绑定选择菜单
 				document.getElementById("openMenu").addEventListener("tap",function(){
@@ -70,13 +67,47 @@
 				
 				//绑定选择照片按钮
 				document.getElementById("link_choosePhoto").addEventListener("tap",function(){
-					mui.openWindow("plugin/v3.1.6/myface-uploader.html","myface-uploader");
+					mui.openWindow({url:"plugin/v3.1.6/myface-uploader.html",id:"myface-uploader",createNew:true});
 					mui("#sheet_myface").popover("toggle");
 				});
+				
 				//绑定下载照片按钮
 				document.getElementById("link_savePhoto").addEventListener("tap",function(){
+					var user = app.getUserGlobalInfo();
+					plus.nativeUI.showWaiting("下载中...");
+					var dtast = plus.downloader.createDownload(app.imgServerUrl+user.faceImageBig,{},function(downloadFile, status){
+							plus.nativeUI.closeWaiting();
+							
+							if(status == 200){
+								var tempFile = downloadFile.filename;
+								//通过相册api保存照片到相册
+								plus.gallery.save(tempFile,function(){
+									app.showToast("保存照片成功...","success");
+								});
+							}else{
+								app.showToast("下载错误...","error");
+								console.log("下载错误...")
+							}
+						}
+					);
+					dtast.start(); //启动下载任务
 				});
 			});
+			
+			function refreshFace(){
+				var user = app.getUserGlobalInfo();
+				var faceImage = document.getElementById("img_my_face");
+				if(user != null){
+					var faceImageBig = user.faceImageBig;
+					if(app.isNotNull(faceImageBig)){
+						faceImage.src = app.imgServerUrl+faceImageBig;
+					}
+				}
+				//获取手机端可见屏幕的宽度
+				var imgWidth = document.body.clientWidth;
+				faceImage.width = imgWidth;
+				faceImage.height = imgWidth;
+			}
 		</script>
 	</body>
 
