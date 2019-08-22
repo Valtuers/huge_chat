@@ -57,9 +57,8 @@ public class UserServiceImpl implements UserService {
         users.setFaceImage("");
         users.setFaceImageBig("");
         users.setPassword(MD5Utils.getMD5Str(users.getPassword()));
-
         //TODO 为每个用户生成一个唯一的二维码
-        String qrCodePath = "C://user"+userId+"qrcode.png";
+        String qrCodePath = "D://user"+userId+"qrcode.png";
         qrCodeUtils.createQRCode(qrCodePath, "huge_qrcode:"+ users.getUsername());
         MultipartFile qrFile = FileUtils.fileToMultipart(qrCodePath);
         String qrUrl = fastDFSClient.uploadQRCode(qrFile);

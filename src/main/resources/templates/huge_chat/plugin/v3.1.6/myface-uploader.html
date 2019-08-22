@@ -92,18 +92,18 @@
 						//与后端联调
 						mui.ajax(app.serverUrl+"/user/uploadFaceBase64",{
 							data:{
-								userId: user.id,
+								userid: user.id,
 								faceData: base64Url
 							},
 							dataType:'json',
 							type: 'post',
-							timeout: 10000,
+							timeout: 100000,
 							headers:{'Content-Type':'application/json'},
 							success: function(res){
 								//关闭等待框
 								plus.nativeUI.closeWaiting();
 								if(res.status == 200){
-									var userInfo = data.data;
+									var userInfo = res.data;
 									app.setUserGlobalInfo(userInfo);
 									//触发另外一个webview的自定义事件,可以使用mui.fire()
 									mui.fire(plus.webview.getWebviewById("me"),'refresh');

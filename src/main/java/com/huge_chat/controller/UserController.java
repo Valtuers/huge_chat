@@ -30,7 +30,6 @@ public class UserController {
 
     @PostMapping("/registOrLogin")
     public HugeJSONResult registOrLogin(@RequestBody Users users) throws Exception {
-        System.out.println(users);
         //1.用户名和密码不能为空
         if(StringUtils.isBlank(users.getUsername()) || StringUtils.isBlank(users.getPassword())){
             return HugeJSONResult.errorMsg("用户名或密码不能为空...");
@@ -57,7 +56,7 @@ public class UserController {
     public HugeJSONResult uploadFaceBase64(@RequestBody UsersBo usersBo) throws Exception{
         //获取前端传过来的base64字符串，然后转换为文件对象再上传
         String base64Data = usersBo.getFaceData();
-        String userFacePath = "C:\\"+usersBo.getUserid()+"userface64.png";
+        String userFacePath = "D:\\"+usersBo.getUserid()+"userface64.png";
         if(FileUtils.base64ToFile(userFacePath, base64Data)){
             //上传文件到fastdfs
             MultipartFile faceFile = FileUtils.fileToMultipart(userFacePath);
