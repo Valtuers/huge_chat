@@ -47,7 +47,6 @@
 			var qrcode = user.qrcode;
 			var userface = user.faceImage;
 			var nickname = user.nickname;
-			console.log(qrcode);
 			
 			var img_my_qrcode = document.getElementById("img_my_qrcode");
 			img_my_qrcode.src = app.imgServerUrl + qrcode;
@@ -56,7 +55,7 @@
 			img_myface.src = app.imgServerUrl + userface;
 			
 			var lab_nickname = document.getElementById("lab_nickname");
-			lab_nickname.src = nickname;
+			lab_nickname.innerHTML = nickname;
 			
 			//获取手机端可见屏幕宽度
 			var imgWidth = document.body.clientWidth - 60;
