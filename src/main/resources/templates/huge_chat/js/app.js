@@ -7,8 +7,8 @@ window.app = {
 	/**
 	 * 图片服务器的url地址
 	 */
-	// imgServerUrl: "http://172.16.2.130:88/huge/",
-	imgServerUrl: "http://192.168.145.129:88/huge/",
+	// imgServerUrl: "http://172.16.2.130:88/hugeChat/",
+	imgServerUrl: "http://192.168.145.129:88/hugeChat/",
 	/**
 	 * 判断字符串是否为空
 	 * true: 不为空

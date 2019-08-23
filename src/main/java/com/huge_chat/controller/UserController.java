@@ -3,6 +3,7 @@ package com.huge_chat.controller;
 import com.huge_chat.bean.Users;
 import com.huge_chat.bean.bo.UsersBo;
 import com.huge_chat.bean.vo.UsersVo;
+import com.huge_chat.enums.SearchFriendsStatusEnum;
 import com.huge_chat.service.UserService;
 import com.huge_chat.utils.FastDFSClient;
 import com.huge_chat.utils.FileUtils;
@@ -76,6 +77,12 @@ public class UserController {
         return HugeJSONResult.errorMsg("头像上传失败！！！");
     }
 
+    /**
+     * 设置用户昵称
+     * @param usersBo
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/setNickName")
     public HugeJSONResult setNickName(@RequestBody UsersBo usersBo) throws Exception{
         //更新用户昵称
@@ -83,5 +90,55 @@ public class UserController {
         users.setId(usersBo.getUserid());
         users.setNickname(usersBo.getNickname());
         return HugeJSONResult.ok(userService.updateUserInfo(users));
+    }
+
+    /**
+     * 搜索好友接口，根据账号做匹配查询而不是模糊查询
+     */
+    @GetMapping("/search")
+    public HugeJSONResult searchUser(String myUserId,String friendUsername){
+        //0.判断myUserid,friendUsername不能为空
+        if(StringUtils.isBlank(myUserId) || StringUtils.isBlank(friendUsername)){
+            return HugeJSONResult.errorMsg("");
+        }
+        //前置条件 - 1.搜索的用户如果不存在，返回[无此用户]
+        //前置条件 - 2.搜索账户是你自己，返回[不能添加自己]
+        //前置条件 - 3.搜索的朋友已经是你的好友，返回[该用户已经是你的好友]
+        Integer status = userService.perconditionSearchFriends(myUserId, friendUsername);
+        if(status.equals(SearchFriendsStatusEnum.SUCCESS.status)){
+            Users userFriend = userService.queryUserInfoByUsername(friendUsername);
+            UsersVo vo = new UsersVo();
+            BeanUtils.copyProperties(userFriend, vo);
+            return HugeJSONResult.ok(vo);
+        }else{
+            return HugeJSONResult.errorMsg(SearchFriendsStatusEnum.getMsgByKey(status));
+        }
+    }
+
+    @GetMapping("/addFriendRequest")
+    public HugeJSONResult addFriendRequest(String myUserId,String friendUsername){
+//0.判断myUserid,friendUsername不能为空
+        if(StringUtils.isBlank(myUserId) || StringUtils.isBlank(friendUsername)){
+            return HugeJSONResult.errorMsg("");
+        }
+        //前置条件 - 1.搜索的用户如果不存在，返回[无此用户]
+        //前置条件 - 2.搜索账户是你自己，返回[不能添加自己]
+        //前置条件 - 3.搜索的朋友已经是你的好友，返回[该用户已经是你的好友]
+        Integer status = userService.perconditionSearchFriends(myUserId, friendUsername);
+        if(status.equals(SearchFriendsStatusEnum.SUCCESS.status)){
+            userService.sendFriendRequest(myUserId,friendUsername);
+        }else{
+            return HugeJSONResult.errorMsg(SearchFriendsStatusEnum.getMsgByKey(status));
+        }
+        return HugeJSONResult.ok();
+    }
+
+    @PostMapping("/queryFriendRequest")
+    public HugeJSONResult queryFriendRequest(String userId){
+        if(userId == null){
+            return HugeJSONResult.errorMsg("");
+        }
+        //1.查询用户接收到的朋友申请
+        return HugeJSONResult.ok(userService.queryFriendRequestList(userId));
     }
 }

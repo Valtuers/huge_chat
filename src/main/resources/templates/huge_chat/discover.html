@@ -1,19 +1,53 @@
 <!doctype html>
 <html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.css" rel="stylesheet" />
+	<link href="css/header.css" rel="stylesheet"/>
+</head>
 
-	<head>
-		<meta charset="utf-8">
-		<title></title>
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<link href="css/mui.css" rel="stylesheet" />
-	</head>
-
-	<body>
-		<h1>发现</h1>
-		<script src="js/mui.js"></script>
-		<script type="text/javascript">
-			mui.init()
-		</script>
-	</body>
-
+<body>
+	<div class="mui-content">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell mui-media">
+				<img class="mui-media-object mui-pull-left" src="image/friends.png" style="max-width: 24px;height: 24px;">
+				<p class="mui-ellipsis" style="line-height: 24px;color:#000;font-size:16px;">
+					<span style="margin-left: 10px;">巨友圈</span>
+				</p>
+			</li>
+		</ul>
+		<br>
+		<ul class="mui-table-view">
+			<li id="link_addFriend" class="mui-table-view-cell mui-media">
+				<img class="mui-media-object mui-pull-left" src="image/addfriends.png" style="max-width: 24px;height: 24px;">
+				<p class="mui-ellipsis" style="line-height: 24px;color:#000;font-size:16px;">
+					<span style="margin-left: 10px;">添加好友</span>
+				</p>
+			</li>
+			<li class="mui-table-view-cell mui-media">
+				<img class="mui-media-object mui-pull-left" src="image/scanscan.png" style="max-width: 24px;height: 24px;">
+				<p class="mui-ellipsis" style="line-height: 24px;color:#000;font-size:16px;">
+					<span style="margin-left: 10px;">扫一扫</span>
+				</p>
+			</li>
+		</ul>
+	</div>
+	
+	
+	<script src="js/mui.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript">
+		mui.init();
+		
+		mui.plusReady(function () {
+			var link_addFriend = document.getElementById("link_addFriend");
+			
+			link_addFriend.addEventListener("tap",function(){
+				mui.openWindow("searchFrinend.html","searchFrinend");
+			});
+		});
+	</script>
+</body>
 </html>

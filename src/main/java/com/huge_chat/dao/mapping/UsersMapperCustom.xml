@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huge_chat.dao.UsersCustomMapper" >
+  <select  id="queryFriendRequestList" resultType="com.huge_chat.bean.vo.FriendRequestVo"
+           parameterType="String">
+    select
+    u.id sendUserId,
+    u.username sendUsername,
+    u.nickname sendNickname,
+    u.face_image sendFaceImage
+    from friends_request fr left join user u on fr.send_user_id=u.id
+    where fr.accept_user_id = #{acceptUserId}
+  </select>
+</mapper>
