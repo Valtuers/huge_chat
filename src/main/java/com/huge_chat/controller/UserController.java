@@ -128,7 +128,7 @@ public class UserController {
 
     @GetMapping("/addFriendRequest")
     public HugeJSONResult addFriendRequest(String myUserId,String friendUsername){
-//0.判断myUserid,friendUsername不能为空
+        //0.判断myUserid,friendUsername不能为空
         if(StringUtils.isBlank(myUserId) || StringUtils.isBlank(friendUsername)){
             return HugeJSONResult.errorMsg("");
         }

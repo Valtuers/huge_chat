@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
         Example.Criteria mfc = mfe.createCriteria();
         mfc.andEqualTo("myUserId",myUserId);
         mfc.andEqualTo("myFriendUserId",users.getId());
-        MyFriends mfsRel = myFriendsMapper.selectOneByExample(mfc);
+        MyFriends mfsRel = myFriendsMapper.selectOneByExample(mfe);
         if(mfsRel != null){
             return SearchFriendsStatusEnum.ALREADY_FRIENDS.status;
         }

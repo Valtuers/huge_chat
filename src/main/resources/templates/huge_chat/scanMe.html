@@ -32,54 +32,57 @@
 		
 		mui.plusReady(function () {
 			
-			setTimeout("startScan()",500);
+			setTimeout("startScan()","500");
 		});
 		
 		var scan;
 		function startScan(){
-			scan = plus.barcode.Barcode("scanComponet",null,{
+			scan = new plus.barcode.Barcode("scanComponet",null,{
 				frameColor: "#409EFF",
 				scanbarColor: "409EFF",
 				background: ""
 			});
-			scan.onmarked = function (type, result) {
-				if(type === 0){
-					var content = result.split("huge_qrcode:");
-					if(content.length != 2){
-						mui.alert(result);
-					}else{
-						var friendUsername = content[1];
-						
-						var user = app.getUserGlobalInfo();
-						
-						plus.nativeUI.showWaiting("请稍后...");
-						mui.mui.ajax('/user/search?myUserId='+user.id+"&friendUsername="+friendUsername,
-						{
-							data:{},
-							dataType:'json',//服务器返回json格式数据
-							type:'get',//HTTP请求类型
-							timeout:10000,//超时时间设置为10秒；
-							success:function(res){
-								plus.nativeUI.closeWaiting();
-								if(res.status == 200){
-									mui.openWindow({
-										url: 'friendInfo.html',
-										id: 'friendInfo',
-										styles:{},
-										extras:{
-											willBeFriend: res.data
-										}
-									});
-								}else{
-									app.showToast(res.msg,"error");
-								}
-								
+			scan.onmarked = onmarked;
+			scan.start();
+		}
+		function onmarked(type, result) {
+			if(type === 0){
+				var content = result.split("huge_qrcode:");
+				if(content.length != 2){
+					mui.alert(result);
+				}else{
+					var friendUsername = content[1];
+							console.log(friendUsername)
+					
+					var user = app.getUserGlobalInfo();
+					
+					plus.nativeUI.showWaiting("请稍后...");
+					mui.ajax(app.serverUrl+'/user/search?myUserId='+user.id+"&friendUsername="+friendUsername,
+					{
+						data:{},
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(res){
+							plus.nativeUI.closeWaiting();
+							console.log(res.status)
+							if(res.status == 200){
+								mui.openWindow({
+									url: 'friendInfo.html',
+									id: 'friendInfo',
+									styles:{},
+									extras:{
+										willBeFriend: res.data
+									}
+								});
+							}else{
+								app.showToast(res.msg,"error");
 							}
-						});
-					}
+							
+						}
+					});
 				}
-				scan.start();
-			};
+			}
 			scan.start();
 		}
 	</script>

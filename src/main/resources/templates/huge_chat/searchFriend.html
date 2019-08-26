@@ -11,10 +11,11 @@
 	body{
 		background: #5e5e5e;
 	}
-	#img_my_face{
+	.mui-content{
 		width: 100%;
-		margin-top: 50%;
-		box-shadow: 0 0 20px #000;
+		position: absolute;
+		top: 0;
+		bottom: 0;
 	}
 </style>
 <body>
@@ -41,7 +42,8 @@
 			
 			document.getElementById("searchUsername").addEventListener("tap",function(){
 				plus.nativeUI.showWaiting("请稍后...");
-				mui.mui.ajax('/user/search?myUserId='+user.id+"&friendUsername="+new_fri_username.value,
+				console.log('/user/search?myUserId='+user.id+"&friendUsername="+new_fri_username.value)
+				mui.ajax(app.serverUrl + '/user/search?myUserId='+user.id+"&friendUsername="+new_fri_username.value,
 				{
 					data:{},
 					dataType:'json',//服务器返回json格式数据

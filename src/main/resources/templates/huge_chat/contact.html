@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 	<link href="css/mui.css" rel="stylesheet" />
-	<link href="../css/mui.indexedlist.css" rel="stylesheet" />
+	<link href="css/mui.indexedlist.css" rel="stylesheet" />
 	<link href="css/header.css" rel="stylesheet"/>
 	<style>
 		html,body {
@@ -21,9 +21,9 @@
 <body>
 	
 	<div class="mui-content">
-		<div id='list' class="mui-indexed-list">
+		<div id="list" class="mui-indexed-list">
 			<div class="mui-indexed-list-search mui-input-row mui-search">
-				<input type="search" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索机场">
+				<input type="search" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索巨友">
 			</div>
 			<div class="mui-indexed-list-bar">
 				<a>A</a>
@@ -69,22 +69,71 @@
 	<script type="text/javascript">
 		mui.init();
 		mui.plusReady(function () {
-			fetchContactList();
 			
 			var thisWebview = plus.webview.currentWebview();
 			//监听当前webview的show事件
 			thisWebview.addEventListener("show",function(){
+				fetchContactList();
 				
 				renderContactPage();
-				
-				var list = document.getElementById('list');
-				//设置 hieght
-				list.style.height = document.body.offsetHeight + 'px';
-				//创建列表显示
-				window.indexedList = new mui.IndexedList(list);
+				// 显示通讯录
+				showList();
 			});
 		    
 		});
+			
+		// 显示通讯录
+		function showList() {
+			var list = document.getElementById('list');
+			list.style.height = document.body.offsetHeight + "px";
+			// 创建列表显示
+			window.indexedList = new mui.IndexedList(list);
+		}
+		//获取后端所有好友列表
+		function fetchContactList(){
+			var user = app.getUserGlobalInfo();
+			mui.ajax(app.serverUrl + '/user/myFriends',{
+				data:{
+					userId: user.id
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				success:function(res){
+					//TODO 通讯录
+					if(res.status == 200){
+						var contactList = res.data;
+						app.setContactList(contactList);
+					}
+				}
+			});
+		}
+		
+		
+		
+		// 26个字母外加 # 号
+		var enWords = [
+			'A', 'B', 'C', 'D', 'E', 'F', 'G', 
+			'H', 'I', 'J', 'K', 'L', 'M', 'N',
+			'O', 'P', 'Q', 'R', 'S', 'T', 
+			'U', 'V', 'W', 'X', 'Y', 'Z',
+			'#'
+		]
+		// 构建通讯录二维数组模型
+		var contactArray = [
+			[],[],[],[],[],[],[],[],[],
+			[],[],[],[],[],[],[],[],[],
+			[],[],[],[],[],[],[],[],[]
+		]
+		// 清空通讯录模型数组
+		function clearContactArray() {
+			contactArray = [
+				[],[],[],[],[],[],[],[],[],
+				[],[],[],[],[],[],[],[],[],
+				[],[],[],[],[],[],[],[],[]
+			]
+		}
+		
 		
 		//从缓存中获取联系人列表,并且渲染到页面
 		function renderContactPage(){
@@ -144,51 +193,6 @@
 			// 	});
 			// 	
 			// })
-		}
-		
-		//获取后端所有好友列表
-		function fetchContactList(){
-			var user = app.getUserGlobalInfo();
-			mui.ajax(app.serverUrl + '/user/myFriends',{
-				data:{
-					userId: user.id
-				},
-				dataType:'json',//服务器返回json格式数据
-				type:'post',//HTTP请求类型
-				timeout:10000,//超时时间设置为10秒；
-				success:function(res){
-					//TODO 通讯录
-					if(res.status == 200){
-						var contactList = res.data;
-						app.setContactList(contactList);
-					}
-				}
-			});
-		}
-		
-		
-		
-		// 26个字母外加 # 号
-		var enWords = [
-			'A', 'B', 'C', 'D', 'E', 'F', 'G', 
-			'H', 'I', 'J', 'K', 'L', 'M', 'N',
-			'O', 'P', 'Q', 'R', 'S', 'T', 
-			'U', 'V', 'W', 'X', 'Y', 'Z',
-			'#'
-		]
-		// 构建通讯录二维数组模型
-		var contactArray = [
-			[],[],[],[],[],[],[],[],[],
-			[],[],[],[],[],[],[],[],[],
-			[],[],[],[],[],[],[],[],[]
-		]
-		// 清空通讯录模型数组
-		function clearContactArray() {
-			contactArray = [
-				[],[],[],[],[],[],[],[],[],
-				[],[],[],[],[],[],[],[],[],
-				[],[],[],[],[],[],[],[],[]
-			]
 		}
 		
 		//获取英文字母所在数组的位置

@@ -2,15 +2,15 @@ window.app = {
 	/**
 	 * 后端地址
 	 */
-	serverUrl: "http://172.16.2.200:8011",
-	// serverUrl: "http://192.168.43.102:8011",
+	// serverUrl: "http://172.16.2.200:8011",
+	serverUrl: "http://192.168.43.102:8011",
 	/**
 	 * 图片服务器的url地址
 	 */
 	// imgServerUrl: "http://172.16.2.130:88/hugeChat/",
 	// imgServerUrl: "http://192.168.145.129:88/hugeChat/",
-	imgServerUrl: "http://172.16.2.200:8011",
-	// imgServerUrl: "http://192.168.43.102:8011",
+	// imgServerUrl: "http://172.16.2.200:8011",
+	imgServerUrl: "http://192.168.43.102:8011",
 	/**
 	 * 判断字符串是否为空
 	 * true: 不为空
@@ -59,7 +59,7 @@ window.app = {
 	 */
 	getContactList: function(){
 		var contactListStr = plus.storage.getItem("contactList");
-		if(this.isNotNull(contactListStr)){
+		if(!this.isNotNull(contactListStr)){
 			return [];
 		}else{
 			return JSON.parse(contactListStr);

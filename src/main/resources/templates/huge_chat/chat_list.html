@@ -7,6 +7,10 @@
 	<link href="css/mui.css" rel="stylesheet" />
 	<link href="css/header.css" rel="stylesheet"/>
 	<style>
+		html,body {
+			height: 100%;
+			overflow: hidden;
+		}
 		.ignoreRequest{
 			
 		}
@@ -88,14 +92,13 @@
 				},
 				dataType:'json',//服务器返回json格式数据
 				type:'post',//HTTP请求类型
-				timeout:10000,//超时时间设置为10秒；
-				headers:{'Content-Type':'application/json'},	              
-				success:function(data){
+				timeout:10000,//超时时间设置为10秒；              
+				success:function(res){
 					// 更新通讯录
 					app.setContactList(res.data);
 					
 					// 重新加载好友请求记录
-					loadingFriendRequests();
+					loadingFriendRequest();
 				}
 			});
 		}
