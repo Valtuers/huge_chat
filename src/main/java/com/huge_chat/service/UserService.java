@@ -2,6 +2,7 @@ package com.huge_chat.service;
 
 import com.huge_chat.bean.Users;
 import com.huge_chat.bean.vo.FriendRequestVo;
+import com.huge_chat.bean.vo.MyFriendsVo;
 
 import java.util.List;
 
@@ -29,4 +30,16 @@ public interface UserService {
 
     //查询好友请求
     List<FriendRequestVo> queryFriendRequestList(String acceptUserId);
+
+    //删除好友请求
+    public void deleteFriendRequest(String sendUserId,String acceptUserId);
+
+    //通过好友请求
+    //1.保存好友
+    //2.逆向保存好友
+    //3.删除好友请求记录
+    public void passFriendRequest(String sendUserId,String acceptUserId);
+
+    //查询好友列表
+    public List<MyFriendsVo> queryMyFriends(String userId);
 }

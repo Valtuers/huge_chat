@@ -4,10 +4,11 @@ import com.huge_chat.bean.FriendsRequest;
 import com.huge_chat.bean.MyFriends;
 import com.huge_chat.bean.Users;
 import com.huge_chat.bean.vo.FriendRequestVo;
+import com.huge_chat.bean.vo.MyFriendsVo;
 import com.huge_chat.dao.FriendsRequestMapper;
 import com.huge_chat.dao.MyFriendsMapper;
 import com.huge_chat.dao.UsersMapper;
-import com.huge_chat.dao.UsersCustomMapper;
+import com.huge_chat.dao.UsersMapperCustom;
 import com.huge_chat.enums.SearchFriendsStatusEnum;
 import com.huge_chat.service.UserService;
 import com.huge_chat.utils.FastDFSClient;
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
     UsersMapper usersMapper;
 
     @Autowired
-    UsersCustomMapper usersCustomMapper;
+    UsersMapperCustom usersMapperCustom;
 
     @Autowired
     MyFriendsMapper myFriendsMapper;
@@ -77,11 +78,12 @@ public class UserServiceImpl implements UserService {
         users.setFaceImageBig("");
         users.setPassword(MD5Utils.getMD5Str(users.getPassword()));
         //TODO 为每个用户生成一个唯一的二维码
-        String qrCodePath = "D://user"+userId+"qrcode.png";
-        qrCodeUtils.createQRCode(qrCodePath, "huge_qrcode:"+ users.getUsername());
-        MultipartFile qrFile = FileUtils.fileToMultipart(qrCodePath);
-        String qrUrl = fastDFSClient.uploadQRCode(qrFile);
-        users.setQrcode(qrUrl);
+        System.out.println(System.getProperty("user.dir"));
+        String qrCodePath = "/images/qrcode/user"+userId+"qrcode.png";
+        qrCodeUtils.createQRCode(System.getProperty("user.dir")+"/src/main/resources/static"+qrCodePath, "huge_qrcode:"+ users.getUsername());
+//        MultipartFile qrFile = FileUtils.fileToMultipart(System.getProperty("user.dir")+"/src/main/resources/static"+qrCodePath);
+//        String qrUrl = fastDFSClient.uploadQRCode(qrFile);
+        users.setQrcode(qrCodePath);
 
         users.setId(userId);
         usersMapper.insert(users);
@@ -149,10 +151,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<FriendRequestVo> queryFriendRequestList(String acceptUserId) {
-        return usersCustomMapper.queryFriendRequestList(acceptUserId);
+        return usersMapperCustom.queryFriendRequestList(acceptUserId);
+    }
+
+    @Override
+    public void deleteFriendRequest(String sendUserId, String acceptUserId) {
+        Example fre = new Example(FriendsRequest.class);
+        Example.Criteria frc = fre.createCriteria();
+        frc.andEqualTo("sendUserId", sendUserId);
+        frc.andEqualTo("acceptUserId", acceptUserId);
+        friendsRequestMapper.deleteByExample(fre);
+    }
+
+    @Override
+    public void passFriendRequest(String sendUserId, String acceptUserId) {
+        saveFriends(sendUserId,acceptUserId);
+        saveFriends(acceptUserId,sendUserId);
+        deleteFriendRequest(sendUserId,acceptUserId);
+    }
+
+    @Override
+    public List<MyFriendsVo> queryMyFriends(String userId) {
+        return usersMapperCustom.queryMyFriends(userId);
     }
 
     private Users queryUserById(String userId){
         return usersMapper.selectByPrimaryKey(userId);
+    }
+
+    private void saveFriends(String sendUserId, String acceptUserId){
+        MyFriends myFriends = new MyFriends(){{
+            setId(sid.nextShort());
+            setMyFriendUserId(acceptUserId);
+            setMyUserId(sendUserId);
+        }};
+        myFriendsMapper.insert(myFriends);
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.huge_chat.dao.UsersCustomMapper" >
+<mapper namespace="com.huge_chat.dao.UsersMapperCustom" >
   <select  id="queryFriendRequestList" resultType="com.huge_chat.bean.vo.FriendRequestVo"
            parameterType="String">
     select
@@ -8,7 +8,19 @@
     u.username sendUsername,
     u.nickname sendNickname,
     u.face_image sendFaceImage
-    from friends_request fr left join user u on fr.send_user_id=u.id
+    from friends_request fr left join users u on fr.send_user_id=u.id
     where fr.accept_user_id = #{acceptUserId}
   </select>
+
+  <select  id="queryMyFriends" resultType="com.huge_chat.bean.vo.MyFriendsVo"
+           parameterType="String">
+    select
+    u.id friendUserId,
+    u.username friendUsername,
+    u.nickname friendNickname,
+    u.face_image friendFaceImage
+    from my_friends mf left join users u on mf.my_friend_user_id=u.id
+    where mf.my_user_id = #{userId}
+  </select>
+
 </mapper>

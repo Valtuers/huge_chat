@@ -2,18 +2,24 @@ package com.huge_chat.controller;
 
 import com.huge_chat.bean.Users;
 import com.huge_chat.bean.bo.UsersBo;
+import com.huge_chat.bean.vo.MyFriendsVo;
 import com.huge_chat.bean.vo.UsersVo;
+import com.huge_chat.enums.OperatorFriendRequestTypeEnum;
 import com.huge_chat.enums.SearchFriendsStatusEnum;
 import com.huge_chat.service.UserService;
 import com.huge_chat.utils.FastDFSClient;
 import com.huge_chat.utils.FileUtils;
 import com.huge_chat.utils.HugeJSONResult;
 import com.huge_chat.utils.MD5Utils;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -57,20 +63,25 @@ public class UserController {
     public HugeJSONResult uploadFaceBase64(@RequestBody UsersBo usersBo) throws Exception{
         //获取前端传过来的base64字符串，然后转换为文件对象再上传
         String base64Data = usersBo.getFaceData();
-        String userFacePath = "D:\\"+usersBo.getUserid()+"userface64.png";
-        if(FileUtils.base64ToFile(userFacePath, base64Data)){
+        String userFacePath = "/images/faceimg/"+usersBo.getUserid()+"userface64.png";
+        if(FileUtils.base64ToFile(System.getProperty("user.dir")+"/src/main/resources/static"+userFacePath, base64Data)){
+
+            Thumbnails.of(System.getProperty("user.dir")+"/src/main/resources/static"+userFacePath)
+                    .size(80, 80)
+                    .toFile(System.getProperty("user.dir")+"/src/main/resources/static/images/faceimg/"+usersBo.getUserid() + "userface64_80x80.png");
+
             //上传文件到fastdfs
-            MultipartFile faceFile = FileUtils.fileToMultipart(userFacePath);
-            String url = fastDFSClient.uploadBase64(faceFile);
-            System.out.println(url);
+            //MultipartFile faceFile = FileUtils.fileToMultipart(System.getProperty("user.dir")+"/src/main/resources/static"+userFacePath);
+            //String url = fastDFSClient.uploadBase64(faceFile);
+            System.out.println(userFacePath);
             //获取缩略图的url
             String thump = "_80x80.";
-            String[] arr = url.split("\\.");
+            String[] arr = userFacePath.split("\\.");
             String thumpImgUrl = arr[0]+thump+arr[1];
             //更新用户头像
             Users users = new Users();
             users.setId(usersBo.getUserid());
-            users.setFaceImageBig(url);
+            users.setFaceImageBig(userFacePath);
             users.setFaceImage(thumpImgUrl);
             return HugeJSONResult.ok(userService.updateUserInfo(users));
         }
@@ -140,5 +151,40 @@ public class UserController {
         }
         //1.查询用户接收到的朋友申请
         return HugeJSONResult.ok(userService.queryFriendRequestList(userId));
+    }
+
+    @PostMapping("/operFriendRequest")
+    public HugeJSONResult operFriendRequest(String acceptUserId,String sendUserId,Integer operType){
+        //0.acceptUserId sendUserId判断不能为空
+        if(StringUtils.isBlank(acceptUserId) || StringUtils.isBlank(sendUserId) || operType == null){
+            return HugeJSONResult.errorMsg("");
+        }
+        //1.如果operType没有对应的枚举值，则直接抛出空错误信息
+        if(StringUtils.isBlank(OperatorFriendRequestTypeEnum.getMsgByType(operType))) {
+            return HugeJSONResult.errorMsg("");
+        }
+        if(operType.equals(OperatorFriendRequestTypeEnum.IGNORE.type)){
+            //2.判断如果忽略好友请求，这直接删除好友请求的数据库表记录
+            userService.deleteFriendRequest(sendUserId, acceptUserId);
+        }else if(operType.equals(OperatorFriendRequestTypeEnum.PASS.type)){
+            //3.判断如果是通过好友请求，则互相增加好友记录到数据库对应的表
+            userService.passFriendRequest(sendUserId, acceptUserId);
+        }
+        //4.数据库查询好友列表
+        List<MyFriendsVo> myFriends = userService.queryMyFriends(acceptUserId);
+        return HugeJSONResult.ok(myFriends);
+    }
+
+    /**
+     * 查询我的好友列表
+     */
+    @PostMapping("/myFriends")
+    public HugeJSONResult myFriends(String userId){
+        if(StringUtils.isBlank(userId)){
+            return HugeJSONResult.errorMsg("");
+        }
+        //1.数据库查询好友列表
+        List<MyFriendsVo> myFriends = userService.queryMyFriends(userId);
+        return HugeJSONResult.ok(myFriends);
     }
 }

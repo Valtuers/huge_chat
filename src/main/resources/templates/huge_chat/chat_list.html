@@ -32,6 +32,10 @@
 			thisWebview.addEventListener("show",function(){
 				loadingFriendRequest();
 			});
+			
+			window.addEventListener("refresh",function(){
+				loadingFriendRequest();
+			});
 		});
 		
 		function loadingFriendRequest(){
@@ -87,10 +91,8 @@
 				timeout:10000,//超时时间设置为10秒；
 				headers:{'Content-Type':'application/json'},	              
 				success:function(data){
-					
 					// 更新通讯录
-					var myFriendList = data.data;
-					app.setContactList(myFriendList);
+					app.setContactList(res.data);
 					
 					// 重新加载好友请求记录
 					loadingFriendRequests();

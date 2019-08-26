@@ -3,15 +3,15 @@ server:
   tomcat:
     uri-encoding: UTF-8
 
-fdfs:
-  so-timeout: 15010
-  connect-timeout: 6010
-  thumb-image:             #缩略图生成参数
-    width: 80
-    height: 80
-  tracker-list:            #TrackerList参数,支持多个
+#fdfs:
+#  so-timeout: 15010
+#  connect-timeout: 6010
+#  thumb-image:             #缩略图生成参数
+#    width: 80
+#    height: 80
+#  tracker-list:            #TrackerList参数,支持多个
 #    - 172.16.2.130:22122
-    - 192.168.145.129:22122
+#    - 192.168.145.129:22122
 
 spring:
   datasource:

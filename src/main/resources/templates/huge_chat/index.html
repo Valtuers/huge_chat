@@ -74,18 +74,26 @@
 				indexWebview.append(hugePage);
 			}
 			plus.webview.show(hugeArray[0].pageId);
-		});
-		
-		//批量绑定tap事件,展示不同的页面
-		mui(".mui-bar-tab").on("tap","a",function(){
-			var tabindex = this.getAttribute("tabindex");
-			//显示点击的tab选项所对应的页面
-			plus.webview.show(hugeArray[tabindex].pageId,"fade-in",200);
-			for(var i=0;i<hugeArray.length;i++){
-				if(i != tabindex){
-					plus.webview.hide(hugeArray[i].pageId,"fade-out",200);
+			
+			//批量绑定tap事件,展示不同的页面
+			mui(".mui-bar-tab").on("tap","a",function(){
+				var tabindex = this.getAttribute("tabindex");
+				//显示点击的tab选项所对应的页面
+				plus.webview.show(hugeArray[tabindex].pageId,"fade-in",200);
+				for(var i=0;i<hugeArray.length;i++){
+					if(i != tabindex){
+						plus.webview.hide(hugeArray[i].pageId,"fade-out",200);
+					}
 				}
-			}
+			});
+			
+			//延时预加载
+			setTimeout(function(){
+				var chat_list = plus.webview.getWebviewById("chat_list");
+				mui.fire(chat_list,"refresh");
+				var me = plus.webview.getWebviewById("me");
+				mui.fire(me,'refresh');
+			}, 1000);
 		});
     </script>
 </body>
