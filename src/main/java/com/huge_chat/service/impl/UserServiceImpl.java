@@ -5,11 +5,10 @@ import com.huge_chat.bean.MyFriends;
 import com.huge_chat.bean.Users;
 import com.huge_chat.bean.vo.FriendRequestVo;
 import com.huge_chat.bean.vo.MyFriendsVo;
-import com.huge_chat.dao.FriendsRequestMapper;
-import com.huge_chat.dao.MyFriendsMapper;
-import com.huge_chat.dao.UsersMapper;
-import com.huge_chat.dao.UsersMapperCustom;
+import com.huge_chat.dao.*;
+import com.huge_chat.enums.MsgSignFlagEnum;
 import com.huge_chat.enums.SearchFriendsStatusEnum;
+import com.huge_chat.netty.ChatMsg;
 import com.huge_chat.service.UserService;
 import com.huge_chat.utils.FastDFSClient;
 import com.huge_chat.utils.FileUtils;
@@ -41,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     FriendsRequestMapper friendsRequestMapper;
+
+    @Autowired
+    ChatMsgMapper chatMsgMapper;
 
     @Autowired
     private Sid sid;
@@ -173,6 +175,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<MyFriendsVo> queryMyFriends(String userId) {
         return usersMapperCustom.queryMyFriends(userId);
+    }
+
+    @Override
+    public String saveMsg(ChatMsg chatMsg) {
+        com.huge_chat.bean.ChatMsg msgDB = new com.huge_chat.bean.ChatMsg(){{
+            setId(sid.nextShort());
+            setSendUserId(chatMsg.getSenderId());
+            setAcceptUserId(chatMsg.getReceiverId());
+            setMsg(chatMsg.getMsg());
+            setCreateTime(new Date());
+            setSignFlag(MsgSignFlagEnum.unsign.type);
+        }};
+        chatMsgMapper.insert(msgDB);
+        return msgDB.getId();
+    }
+
+    @Override
+    public void updateMsgSigned(List<String> msgIdList) {
+        usersMapperCustom.batchUpdateMsgSigned(msgIdList);
     }
 
     private Users queryUserById(String userId){

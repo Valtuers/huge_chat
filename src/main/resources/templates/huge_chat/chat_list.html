@@ -37,10 +37,68 @@
 				loadingFriendRequest();
 			});
 			
+			//刷新好友请求,初始化websocket
 			window.addEventListener("refresh",function(){
 				loadingFriendRequest();
+				CHAT.init();
 			});
+			CHAT.init();
 		});
+		//构建聊天业务CHAT
+		window.CHAT = {
+			socket: null,
+			init: function() {
+				if (window.WebSocket) {
+					//如果当前的状态已经连接,那就不需要重复初始化websocket
+					if(CHAT.socket != null && CHAT.socket != undefined && CHAT.socket.readyState == WebSocket.OPEN){
+						return false;
+					}
+					
+					CHAT.socket = new WebSocket(app.nettyServerUrl);
+					CHAT.socket.onopen = CHAT.wsopen,
+					CHAT.socket.onclose = CHAT.wsclose,
+					CHAT.socket.onerror = CHAT.wserror,
+					CHAT.socket.onmessage = CHAT.wsmessage;
+				} else {
+					alert("手机设备过旧，请升级手机设备...");
+				}
+			},
+			chat: function(msg) {
+				//如果当前websocket的状态是已打开,则直接发送,否则重连
+				if(CHAT.socket != null && CHAT.socket != undefined && CHAT.socket.readyState == WebSocket.OPEN){
+					CHAT.socket.send(msg);
+				}else{
+					//重连websocket
+					CHAT.init();
+					setTimeout("CHAT.reChat("+msg+")",500);
+				}
+			},
+			reChat: function(msg){
+				CHAT.socket.send(msg);
+			},
+			wsopen: function(){
+				console.log("websocket连接已建立");
+				var me = app.getUserGlobalInfo();
+				//构建ChatMsg
+				var chatMsg = new app.ChatMsg(me.id,null,null,null);
+				//构建DataContent
+				var dataContent = new app.DataContent(app.CONNECT,chatMsg,null);
+				//发送WebSocket
+				CHAT.chat(JSON.stringify(dataContent));
+			},
+			wsmessage: function(e) {
+				//调用聊天webview的方法
+				var cahtWebview = plus.webview.getWebviewById("chatting-");
+				cahtWebview.evalJS("receiveMsg('"+e.data+"')");
+				cahtWebview.evalJS("resizeScreen()");
+			},
+			wsclose: function() {
+				console.log("连接关闭...");
+			},
+			wserror: function() {
+				console.log("发生错误...");
+			}
+		};
 		
 		function loadingFriendRequest(){
 			//获取用户全局对象

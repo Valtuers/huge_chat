@@ -12,6 +12,10 @@ window.app = {
 	// imgServerUrl: "http://172.16.2.200:8011",
 	imgServerUrl: "http://192.168.43.102:8011",
 	/**
+	 * netty服务后端发布的url地址
+	 */
+	nettyServerUrl: "ws://192.168.43.102:8088/ws",
+	/**
 	 * 判断字符串是否为空
 	 * true: 不为空
 	 * false: 为空
@@ -64,5 +68,37 @@ window.app = {
 		}else{
 			return JSON.parse(contactListStr);
 		}
+	},
+	/**
+	 * 和后端的枚举对应
+	 */
+	CONNECT: 1,		//第一次(或重连)初始化连接
+	CHAT: 2,		//聊天消息
+	SIGNED: 3,		//消息签收
+	KEEPALIVE: 4,	//客户端保持心跳
+	PULL_FRIEND: 5,	//拉取好友
+	/**
+	 * 和后端的ChatMsg 聊天模型对象保持一致
+	 * @param {Object} senderId
+	 * @param {Object} receiverId
+	 * @param {Object} msg
+	 * @param {Object} msgId
+	 */
+	ChatMsg: function(senderId,receiverId,msg,msgId){
+		this.senderId = senderId;
+		this.receiverId = receiverId;
+		this.msg = msg;
+		this.msgId = msgId;
+	},
+	/**
+	 * 构建DataContent消息模型对象
+	 * @param {Object} action
+	 * @param {Object} chatMsg
+	 * @param {Object} extend
+	 */
+	DataContent: function(action,chatMsg,extend){
+		this.action = action;
+		this.chatMsg = chatMsg;
+		this.extend = extend;
 	}
 };

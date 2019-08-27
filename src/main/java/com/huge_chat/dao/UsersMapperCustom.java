@@ -14,4 +14,6 @@ public interface UsersMapperCustom extends MyMapper<Users> {
     List<FriendRequestVo> queryFriendRequestList(String acceptUserId);
 
     List<MyFriendsVo> queryMyFriends(String userId);
+
+    void batchUpdateMsgSigned(List<String> msgIdList);
 }

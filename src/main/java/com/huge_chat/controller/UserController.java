@@ -63,17 +63,20 @@ public class UserController {
     public HugeJSONResult uploadFaceBase64(@RequestBody UsersBo usersBo) throws Exception{
         //获取前端传过来的base64字符串，然后转换为文件对象再上传
         String base64Data = usersBo.getFaceData();
-        String userFacePath = "/images/faceimg/"+usersBo.getUserid()+"userface64.png";
+        //获取图片后缀
+        String suffix = base64Data.split(";base64,")[0].split("/")[1];
+        String userFacePath = "/images/faceimg/"+usersBo.getUserid()+"userface64."+suffix;
         if(FileUtils.base64ToFile(System.getProperty("user.dir")+"/src/main/resources/static"+userFacePath, base64Data)){
 
             Thumbnails.of(System.getProperty("user.dir")+"/src/main/resources/static"+userFacePath)
                     .size(80, 80)
-                    .toFile(System.getProperty("user.dir")+"/src/main/resources/static/images/faceimg/"+usersBo.getUserid() + "userface64_80x80.png");
+                    .toFile(System.getProperty("user.dir")+"/src/main/resources/static/images" +
+                            "/faceimg/"+usersBo.getUserid() + "userface64_80x80."+suffix);
 
             //上传文件到fastdfs
             //MultipartFile faceFile = FileUtils.fileToMultipart(System.getProperty("user.dir")+"/src/main/resources/static"+userFacePath);
             //String url = fastDFSClient.uploadBase64(faceFile);
-            System.out.println(userFacePath);
+
             //获取缩略图的url
             String thump = "_80x80.";
             String[] arr = userFacePath.split("\\.");

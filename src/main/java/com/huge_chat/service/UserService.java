@@ -3,6 +3,7 @@ package com.huge_chat.service;
 import com.huge_chat.bean.Users;
 import com.huge_chat.bean.vo.FriendRequestVo;
 import com.huge_chat.bean.vo.MyFriendsVo;
+import com.huge_chat.netty.ChatMsg;
 
 import java.util.List;
 
@@ -42,4 +43,10 @@ public interface UserService {
 
     //查询好友列表
     public List<MyFriendsVo> queryMyFriends(String userId);
+
+    //保存聊天消息到数据库
+    public String saveMsg(ChatMsg chatMsg);
+
+    //批量签收消息
+    public void updateMsgSigned(List<String> msgIdList);
 }

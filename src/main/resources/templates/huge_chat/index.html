@@ -18,7 +18,7 @@
 </head>
 <body>
 	<header class="mui-bar mui-bar-nav title">
-		<h1 class="mui-title title-color"><b>巨信</b></h1>
+		<h1 id="huge_xin_title" class="mui-title title-color"><b>巨信</b></h1>
 	</header>
 	<nav class="mui-bar mui-bar-tab">
 		<a class="mui-tab-item mui-active" tabindex="0">
@@ -63,6 +63,10 @@
 			mui.back = function(){
 				return false;
 			}
+			
+			//对网络连接进行事件监听
+			netChangeSwitch();
+		
 			//获取当前的webview对象
 			var indexWebview = plus.webview.currentWebview();
 			//向当前的主页追加子页的4张webview对象
@@ -93,8 +97,23 @@
 				mui.fire(chat_list,"refresh");
 				var me = plus.webview.getWebviewById("me");
 				mui.fire(me,'refresh');
-			}, 1000);
+			}, 500);
 		});
+		
+		//监听网络状态更改
+		function netChangeSwitch(){
+			//判断网络的状态
+			document.addEventListener("netchange", function(){
+				var connectionStatus = plus.networkinfo.getCurrentType();
+				if(connectionStatus != 0 && connectionStatus != 1){
+					//重新打开网络连接
+					document.getElementById("huge_xin_title").innerHTML = "<b>巨信</b>";
+				}else{
+					//关闭网络连接
+					document.getElementById("huge_xin_title").innerHTML = "<b>巨信(未连接)</b>";	
+				}
+			});
+		}
     </script>
 </body>
 </html>
