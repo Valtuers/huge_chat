@@ -30,7 +30,7 @@ public class WSServer {
                 .childHandler(new WSServerInitialzer());
     }
     public void start(){
-        this.future = server.bind(8099);
+        this.future = server.bind(8088);
         System.err.println("netty websocket server 启动完毕...");
     }
 }

@@ -1,5 +1,6 @@
 package com.huge_chat.controller;
 
+import com.huge_chat.bean.ChatMsg;
 import com.huge_chat.bean.Users;
 import com.huge_chat.bean.bo.UsersBo;
 import com.huge_chat.bean.vo.MyFriendsVo;
@@ -189,5 +190,18 @@ public class UserController {
         //1.数据库查询好友列表
         List<MyFriendsVo> myFriends = userService.queryMyFriends(userId);
         return HugeJSONResult.ok(myFriends);
+    }
+
+    /**
+     * 用户手机端未签收的消息列表
+     */
+    @PostMapping("/getUnReadMsgList")
+    public HugeJSONResult getUnReadMsgList(String acceptUserId){
+        if(StringUtils.isBlank(acceptUserId)){
+            return HugeJSONResult.errorMsg("");
+        }
+        //1.数据库查询列表
+        List<ChatMsg> unReadMsgList = userService.getUnReadMsgList(acceptUserId);
+        return HugeJSONResult.ok(unReadMsgList);
     }
 }

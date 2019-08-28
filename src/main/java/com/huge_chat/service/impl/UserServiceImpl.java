@@ -6,14 +6,16 @@ import com.huge_chat.bean.Users;
 import com.huge_chat.bean.vo.FriendRequestVo;
 import com.huge_chat.bean.vo.MyFriendsVo;
 import com.huge_chat.dao.*;
+import com.huge_chat.enums.MsgActionEnum;
 import com.huge_chat.enums.MsgSignFlagEnum;
 import com.huge_chat.enums.SearchFriendsStatusEnum;
 import com.huge_chat.netty.ChatMsg;
+import com.huge_chat.netty.DataContent;
+import com.huge_chat.netty.UserChannelRel;
 import com.huge_chat.service.UserService;
-import com.huge_chat.utils.FastDFSClient;
-import com.huge_chat.utils.FileUtils;
-import com.huge_chat.utils.MD5Utils;
-import com.huge_chat.utils.QRCodeUtils;
+import com.huge_chat.utils.*;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -170,6 +172,15 @@ public class UserServiceImpl implements UserService {
         saveFriends(sendUserId,acceptUserId);
         saveFriends(acceptUserId,sendUserId);
         deleteFriendRequest(sendUserId,acceptUserId);
+
+        //使用websocket主动推送消息到请求发起者，更新他的通讯录列表为最新
+        Channel sendChannel = UserChannelRel.get(sendUserId);
+        if(sendChannel != null){
+            DataContent dataContent = new DataContent(){{
+                setAction(MsgActionEnum.PULL_FRIEND.type);
+            }};
+            sendChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(dataContent)));
+        }
     }
 
     @Override
@@ -194,6 +205,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateMsgSigned(List<String> msgIdList) {
         usersMapperCustom.batchUpdateMsgSigned(msgIdList);
+    }
+
+    @Override
+    public List<com.huge_chat.bean.ChatMsg> getUnReadMsgList(String acceptUserId) {
+        Example ce = new Example(com.huge_chat.bean.ChatMsg.class);
+        Example.Criteria ceCriteria = ce.createCriteria();
+        ceCriteria.andEqualTo("acceptUserId",acceptUserId);
+        ceCriteria.andEqualTo("signFlag",0);
+        return chatMsgMapper.selectByExample(ce);
     }
 
     private Users queryUserById(String userId){

@@ -43,8 +43,7 @@
 
 	<div id="msg-outter" class="mui-content">
 		<div id='msg'>
-			
-			<div class="friend_lists">
+			<!-- <div class="friend_lists">
 				<div class="header_img">
 					<img src="image/face-default-cat.png" width="40px" height="40px" />
 				</div>
@@ -60,7 +59,7 @@
 				<div class="msg-wrapper left">
 					<p class="msg-right-blue">好的，没问题！时间地点？</p>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	
@@ -97,7 +96,8 @@
 				
 				//标题改为朋友的昵称
 				document.getElementById("chatting-nickname").innerHTML = friendNickname;
-				
+				//渲染初始化的聊天记录HTML
+				initChatHistory();
 				resizeScreen();
 				
 				//获取dom控件
@@ -141,9 +141,20 @@
 					msg_text.value = "";
 					//发送消息完毕之后,把发送按钮颜色改回灰白色
 					send_btn.setAttribute("class","mui-btn-grey");
+					
+					
+					//构建ChatMsg
+					var chatMsg = new app.ChatMsg(me.id,friendUserId,msg_text_val,null);
+					//构建DataContent
+					var dataContent = new app.DataContent(app.CHAT,chatMsg,null);
 					//调用websocket 发送消息到netty后端
 					var wsWebview = plus.webview.getWebviewById("chat_list");
-					wsWebview.evalJS("CHAT.chat('"+msg_text_val+"')");
+					wsWebview.evalJS("CHAT.chat('"+JSON.stringify(dataContent)+"')");
+					
+					//保存聊天历史记录到本地缓存
+					app.saveUserChatHistory(me.id,friendUserId,msg_text_val,1);
+					//保存聊天快照记录到本地缓存
+					app.saveUserChatSnapshot(me.id,friendUserId,msg_text_val,true);
 				});
 			});
 			
@@ -192,7 +203,44 @@
 					//设置聊天记录进入页面的时候自动滚动到最后一条
 					areaMsgList.scrollTop = areaMsgList.scrollHeight + areaMsgList.offsetHeight;
 			}
+			
+			//初始化用户的聊天记录
+			function initChatHistory(){
+				var msg_list = document.getElementById("msg");
+				var me = app.getUserGlobalInfo();
+				var myId = me.id;
+				var myFaceImg = me.faceImg;
+				
+				var chatHistoryList = app.getUserChatHistory(myId,friendUserId);
+				
+				var togetherHTML = "";
+				for(var i=0;i<chatHistoryList.length;i++){
+					var singleMsg = chatHistoryList[i];
+					if(singleMsg.flag === 1){
+						togetherHTML += '<div class="me_lists">'+
+											'<div class="header_img">'+
+												'<img src="'+myFaceImg+'" width="40px" height="40px" />'+
+											'</div>'+
+											'<div class="msg-wrapper left">'+
+												'<p class="msg-right-blue">'+singleMsg.msg+'</p>'+
+											'</div>'+
+										'</div>';
+					}else{
+						togetherHTML += '<div class="friend_lists">'+
+											'<div class="header_img">'+
+												'<img src="'+app.imgServerUrl+friendFaceImage+'" width="40px" height="40px" />'+
+											'</div>'+
+											'<div class="msg-wrapper right">'+
+												'<p class="msg-left-white">'+singleMsg.msg+'</p>'+
+											'</div>'+
+										'</div>';
+					}
+				}
+				// msg_list.insertAdjacentHTML("beforeend",togetherHTML);
+				msg_list.innerHTML = togetherHTML;
+			}
 		// }(mui, document));
+		
 	</script>
 </body>
 </html>
