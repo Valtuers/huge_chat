@@ -176,7 +176,7 @@
 			function sendMsg(faceImg,msg){
 				var msgHtml = '<div class="me_lists">'+
 								'<div class="header_img">'+
-									'<img src="'+faceImg+'" width="40px" height="40px" />'+
+									'<img src="'+app.imgServerUrl+faceImg+'" width="40px" height="40px" />'+
 								'</div>'+
 								'<div class="msg-wrapper left">'+
 									'<p class="msg-right-blue">'+msg+'</p>'+
@@ -219,7 +219,7 @@
 					if(singleMsg.flag === 1){
 						togetherHTML += '<div class="me_lists">'+
 											'<div class="header_img">'+
-												'<img src="'+myFaceImg+'" width="40px" height="40px" />'+
+												'<img src="'+app.imgServerUrl+myFaceImg+'" width="40px" height="40px" />'+
 											'</div>'+
 											'<div class="msg-wrapper left">'+
 												'<p class="msg-right-blue">'+singleMsg.msg+'</p>'+

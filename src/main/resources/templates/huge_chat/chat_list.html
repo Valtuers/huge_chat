@@ -150,6 +150,8 @@
 				CHAT.chat(JSON.stringify(dataContent));
 				//每次连接之后获取用户的未读未签收消息列表
 				fetchUnReadMsg();
+				//定时发送心跳
+				setInterval("CHAT.keepAlive()",10000);
 			},
 			wsmessage: function(e) {
 				console.log("接收到的消息："+e.data);
@@ -200,6 +202,15 @@
 				//发送批量签收的请求
 				CHAT.chat(JSON.stringify(dataContentSign));
 				
+			},
+			keepAlive: function(){
+				//构建对象
+				var dataContent= new app.DataContent(app.KEEPALIVE,null,null);
+				//发送心跳
+				CHAT.chat(JSON.stringify(dataContent));
+				//定时执行函数
+				fetchUnReadMsg();
+				fetchContactList();
 			}
 		};
 		
